@@ -5,5 +5,5 @@ This app will collect list of nearby places along a short journey. It takes the 
 
 ## Dependency
 - pandas
-- google maps https://github.com/googlemaps/google-maps-services-python
+- [google maps](https://github.com/googlemaps/google-maps-services-python)
 (I will remove the google maps python module and use only the API. Hopefully soon.)
