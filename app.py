@@ -20,12 +20,10 @@ def getPhotosByTag(tag, access_token):
 
 def get_nearby(origin_geoc, dest_geoc, key):
     middle=get_middle_point(origin_geoc, dest_geoc)
-    print(middle)
     lat = middle[0]
     lng = middle[1]
     endpoint = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+lng+"&radius=500&type=restaurant|museum|park|art_gallery|church&key="+key
     nearby = requests.get(url=endpoint)
-    print(nearby.json())
     return nearby.json()
 
 def get_middle_point(origin_geoc, dest_geoc):
