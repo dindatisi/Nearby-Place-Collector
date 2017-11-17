@@ -8,7 +8,10 @@ gmaps_key = ""
 ig_token = ""
 #------------------------------------------------------------ #
 
-def getPhotosByLoc(lat,lng, access_token): 
+def getPhotosByLoc(origin_geoc, dest_geoc, access_token): 
+    middle=get_middle_point(origin_geoc, dest_geoc)
+    lat = middle[0]
+    lng = middle[1]
     api_req = 'https://api.instagram.com/v1/media/search?lat='+lat+'&lng='+lng+'&access_token='+access_token
     photos = requests.get(url=api_req)
     return photos.json()
@@ -36,14 +39,9 @@ def get_middle_point(origin_geoc, dest_geoc):
     middle = [lat,lng]
     return middle
 
-
 def geocode_addrs(address):
     geo = gmaps.geocode(address)
     return geo
-
-def reverse_geo(long, lat):
-    reverse_geocode_result = gmaps.reverse_geocode((long, lat))
-    return reverse_geocode_result
 
 def create_nearby_df(nearby):
     i=0
@@ -71,7 +69,7 @@ def create_ig_df(photo):
     loc_lat = [] 
     loc_lng = []
     photo_url = []
-    #iterate through the json content from instegram, and add data to the list
+    #iterate through the json content from instagram, and add data to the list
     i=0 #create counter
     while i < len(photo['data']):  
         photo_url.append(photo['data'][i]['link'])
@@ -100,7 +98,7 @@ dest = input('Enter Destination: ')
 geocoded_origin = geocode_addrs(origin) 
 geocoded_dest = geocode_addrs(dest)
 
-#get nearby
+#get nearby from google maps
 gmaps_nearby=get_nearby(geocoded_origin, geocoded_dest, gmaps_key)
 gmaps_df = create_nearby_df(gmaps_nearby)
 try:
@@ -109,11 +107,10 @@ try:
 except:
     print("data can't be saved!")
     raise
+print(gmaps_df)
 
-# extract the latitude & longitude from geocoded address
-lat = str(geocoded_origin[0]['geometry']['location']['lat'])
-lng = str(geocoded_dest[0]['geometry']['location']['lng'])
-ig_nearby = getPhotosByLoc(lat,lng, ig_token)
+#get nearby from instagram
+ig_nearby = getPhotosByLoc(geocoded_origin, geocoded_dest, ig_token)
 ig_df = create_ig_df(ig_nearby)
 try:
     ig_df.to_csv('ig_nearby_list.csv', index=False)
